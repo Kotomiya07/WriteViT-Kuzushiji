@@ -5,6 +5,8 @@
     <a href="https://arxiv.org/abs/2505.13235">ArXiv</a>
     | 
     <a href="https://arxiv.org/pdf/2505.13235">Paper</a>
+    | 
+    <a href="https://colab.research.google.com/drive/15Lswqr-aQwI-fF6yRoGYt-2pxSlC2L-R#scrollTo=abWDlzrTFa_h">Demo_Colab</a>
   </b>
 </p> 
 
