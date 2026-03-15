@@ -5,6 +5,7 @@ import numpy as np
 from torch.nn import CTCLoss
 import os
 import cv2
+from tqdm import tqdm
 from params import *
 from .BigGAN_networks import Discriminator
 from util.util import (
@@ -125,6 +126,7 @@ class WriteViT(nn.Module):
         )
 
     def save_images_for_fid_calculation(self, dataloader, epoch, mode="train"):
+    
 
         self.real_base = os.path.join("saved_images", EXP_NAME, "Real")
         self.fake_base = os.path.join("saved_images", EXP_NAME, "Fake")
@@ -134,82 +136,66 @@ class WriteViT(nn.Module):
         if os.path.isdir(self.fake_base):
             shutil.rmtree(self.fake_base)
 
-        os.mkdir(self.real_base)
-        os.mkdir(self.fake_base)
+        os.makedirs(self.real_base, exist_ok=True)
+        os.makedirs(self.fake_base, exist_ok=True)
 
+        # =========================
+        # Save fake images
+        # =========================
         with torch.no_grad():
-            index = 0
-            for step, data in enumerate(dataloader):
-
+            for step, data in enumerate(tqdm(dataloader)):
                 self.sdata = data["img"].to(DEVICE)
-                self.words = [
-                    word.encode("utf-8")
-                    for word in np.random.choice(self.lex, self.batch_size)
-                ]
-                self.text_encode_fake, self.len_text_fake = self.netconverter.encode(
-                    self.words
-                )
+                self.label = data["label"]
+                writer_ids = data["wcl"]   # nhãn id người viết, shape thường là [B]
+
+                self.text_encode_fake, self.len_text_fake = self.netconverter.encode(self.label)
                 self.text_encode_fake = self.text_encode_fake.to(DEVICE)
-                feat_w, _ = self.netW(
-                    self.sdata.detach(), data["wcl"].to(DEVICE)
-                )
+
+                feat_w, _ = self.netW(self.sdata.detach(), writer_ids.to(DEVICE))
                 self.fakes = self.netG(feat_w, self.text_encode_fake)
                 fake_images = self.fakes.detach().cpu().numpy()
 
+                # fake_images: thường là [B, C, H, W] hoặc [B, N, H, W]
                 for i in range(fake_images.shape[0]):
+                    writer_id = writer_ids[i].item() if torch.is_tensor(writer_ids[i]) else int(writer_ids[i])
+                    if mode == "train":
+                        writer_fake_dir = os.path.join(self.fake_base, str(writer_id))
+                        os.makedirs(writer_fake_dir, exist_ok=True)
+                    else:
+                        writer_fake_dir = self.fake_base
+
                     for j in range(fake_images.shape[1]):
                         img = 255 * (((fake_images[i, j]) + 1) / 2)
                         img = padding(img)
+
+                        filename = f"{step}_{i}_{j}.png"
                         cv2.imwrite(
-                            os.path.join(
-                                self.fake_base,
-                                str(step * self.batch_size + i) + ".png",
-                            ),
+                            os.path.join(writer_fake_dir, filename),
                             img,
                         )
-                        index += 1
 
-        if mode == "train":
-
-            TextDatasetObj = TextDataset(num_examples=self.eval_text_encode.shape[1])
-            dataset_real = torch.utils.data.DataLoader(
-                TextDatasetObj,
-                batch_size=self.batch_size,
-                shuffle=True,
-                num_workers=0,
-                pin_memory=True,
-                drop_last=True,
-                collate_fn=TextDatasetObj.collate_fn,
-            )
-
-        elif mode == "test":
-
-            TextDatasetObjval = TextDatasetval(
-                num_examples=self.eval_text_encode.shape[1]
-            )
-            dataset_real = torch.utils.data.DataLoader(
-                TextDatasetObjval,
-                batch_size=self.batch_size,
-                shuffle=True,
-                num_workers=0,
-                pin_memory=True,
-                drop_last=True,
-                collate_fn=TextDatasetObjval.collate_fn,
-            )
-        index = 0
-        for step, data in enumerate(dataset_real):
-
+        # =========================
+        # Save real images
+        # =========================
+        for step, data in enumerate(tqdm(dataloader)):
             real_images = data["img"].numpy()
+            writer_ids = data["wcl"]
 
             for i in range(real_images.shape[0]):
+                writer_id = writer_ids[i].item() if torch.is_tensor(writer_ids[i]) else int(writer_ids[i])
+                if mode == "train":
+                    writer_real_dir = os.path.join(self.real_base, str(writer_id))
+                    os.makedirs(writer_real_dir, exist_ok=True)
+                else:
+                    writer_real_dir = self.real_base
+
                 for j in range(real_images.shape[1]):
                     img = 255 * ((real_images[i, j] + 1) / 2)
                     img = padding(img)
+
+                    filename = f"{step}_{i}_{j}.png"
                     cv2.imwrite(
-                        os.path.join(
-                            self.real_base,
-                            str(step * self.batch_size + i) + ".png",
-                        ),
+                        os.path.join(writer_real_dir, filename),
                         img,
                     )
 
