@@ -1,24 +1,34 @@
  # WriteViT: Handwritten Text Generation with Vision Transformer
 
-  <p align='center'>
-  <b>
-    <a href="https://arxiv.org/abs/2505.13235">ArXiv</a>
-    | 
-    <a href="https://arxiv.org/pdf/2505.13235">Paper</a>
-    | 
-    <a href="https://colab.research.google.com/drive/15Lswqr-aQwI-fF6yRoGYt-2pxSlC2L-R#scrollTo=abWDlzrTFa_h">Demo_Colab</a>
-  </b>
-</p> 
-
- 
- <p align="center">
-<img src=Figures/Architecture.png width="500"/>
+<p align="center">
+  <img src="./Figures/architecture.png" alt="Model Architecture" width="800"/>
 </p>
 
-<!-- 
-<img src="Figures/Result.gif" width="800"/>
- -->
+<p align="center">
+  <b>
+    <a href="https://arxiv.org/abs/2505.13235">ArXiv</a>
+    |
+    <a href="https://github.com/DAIR-Group/WriteViT">Code</a>
+    |
+    <a href="https://colab.research.google.com/drive/15Lswqr-aQwI-fF6yRoGYt-2pxSlC2L-R#scrollTo=abWDlzrTFa_h">
+      Demo
+    </a>
+  </b>
+</p>
 
+<p align="center">
+  <a href="https://github.com/DAIR-Group/WriteViT">
+    <img alt="GitHub" src="https://img.shields.io/badge/GitHub-Repo-181717.svg?logo=github&logoColor=white">
+  </a>
+  <a href="https://arxiv.org/abs/2505.13235">
+    <img alt="arXiv" src="https://img.shields.io/badge/arXiv-2505.13235-b31b1b.svg">
+  </a>
+  <a href="https://colab.research.google.com/drive/15Lswqr-aQwI-fF6yRoGYt-2pxSlC2L-R#scrollTo=abWDlzrTFa_h">
+    <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+  </a>
+</p>
+
+</p>
 
   
 ## Software environment
@@ -38,7 +48,7 @@ Download Dataset files and model from [dataset and checkpoint](https://drive.goo
 Quick setup with terminal:
 
 ```bash
-git clone https://github.com/hnam-1765/WriteViT.git
+git clone https://github.com/DAIR-Group/WriteViT.git
 cd WriteViT
 pip install --upgrade --no-cache-dir gdown
 gdown --id 1D_aT7CKEufR87pbfK-fF4wCr3cca6jAg && unzip ckpt.zip && rm ckpt.zip
