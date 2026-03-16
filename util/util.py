@@ -244,23 +244,6 @@ def tensor2im(input_image, imtype=np.uint8):
     return image_numpy.astype(imtype)
 
 
-def diagnose_network(net, name='network'):
-    """Calculate and print the mean of average absolute(gradients)
-
-    Parameters:
-        net (torch network) -- Torch network
-        name (str) -- the name of the network
-    """
-    mean = 0.0
-    count = 0
-    for param in net.parameters():
-        if param.grad is not None:
-            mean += torch.mean(torch.abs(param.grad.data))
-            count += 1
-    if count > 0:
-        mean = mean / count
-    print(name)
-    print(mean)
 
 
 def save_image(image_numpy, image_path):
@@ -358,7 +341,7 @@ class PosCNN(nn.Module):
         return ["proj.%d.weight" % i for i in range(4)]
 
 def padding(img, h=32, w=128):
-    curr_h, curr_w = img.shape
+    _ , curr_w = img.shape
     if curr_w < w:
         img = np.pad(img, [(0, 0), (0, w - curr_w)], "constant", constant_values=255)
     else:
