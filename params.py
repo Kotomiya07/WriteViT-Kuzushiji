@@ -20,6 +20,13 @@ if DATASET == 'VNDB':
     ALPHABET = 'aáàảãạăắằẳẵặâấầẩẫậbcdđeéèẻẽẹêếềểễệfghiíìỉĩịjklmnoóòỏõọôốồổỗộơớờởỡợpqrstuúùủũụưứừửữựvwxyýỳỷỹỵzAÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬBCDĐEÉÈẺẼẸÊẾỀỂỄỆFGHIÍÌỈĨỊJKLMNOÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢPQRSTUÚÙỦŨỤƯỨỪỬỮỰVWXYÝỲỶỸỴZ0123456789!'
     MY_STRING = "Trong cuộc sống này dù có gặp phải bao nhiêu khó khăn thử thách hãy luôn giữ vững niềm tin chăm chỉ học hỏi từng ngày sống chân thành yêu thương những người xung quanh và không ngừng ước mơ bởi chính sự kiên nhẫn và nỗ lực sẽ giúp ta vượt qua mọi giới hạn chạm tới thành công và hạnh phúc trọn vẹn"
 
+if DATASET == 'CVL':
+    DATASET_PATHS = './File/IAM.pickle'
+    NUM_WRITERS = 283
+    WORDS_PATH = './File/english_words.txt'
+    ALPHABET = 'Only thewigsofrcvdampbkuq.A-210xT5\'MDL,RYHJ"ISPWENj&BC93VGFKz();#:!7U64Q8?+*ZX/%'
+    MY_STRING = "The Statue of Liberty, arguably one of New York City's most iconic symbols, is a popular tourist attraction for first-time visitors to the city. This 150-foot monument was gifted to the United States from France in order to celebrate 100 years of America's independence. When Claire visited the Statue of Liberty for the first time, SHE instantly admired it as a symbol of freedom."
+
  
 
 ###############################################
@@ -34,14 +41,14 @@ D_LR = 5e-5
 W_LR = 5e-5
 OCR_LR = 5e-5
  
-EPOCHS = 1000
+EPOCHS = 200
 NUM_CRITIC_GOCR_TRAIN = 2
 NUM_CRITIC_DOCR_TRAIN = 1
  
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SAVE_MODEL = 10
-SAVE_MODEL_HISTORY = 100
+SAVE_MODEL_HISTORY = 50
 
 def init_project():
     import os, shutil

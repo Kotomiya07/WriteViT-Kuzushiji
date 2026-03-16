@@ -20,16 +20,6 @@ from params import *
 import glob, cv2
 import torchvision.transforms as transforms
 
-
-def crop_(input):
-    image = Image.fromarray(input)
-    image = image.convert("L")
-    binary_image = image.point(lambda x: 0 if x > 127 else 255, "1")
-    bbox = binary_image.getbbox()
-    cropped_image = image.crop(bbox)
-    return np.array(cropped_image)
-
-
 def get_transform(grayscale=False, convert=True):
 
     transform_list = []
@@ -48,7 +38,7 @@ def get_transform(grayscale=False, convert=True):
 
 class TextDataset:
 
-    def __init__(self, base_path=DATASET_PATHS, num_examples=15, target_transform=None):
+    def __init__(self, base_path=DATASET_PATHS, num_examples=20, target_transform=None):
 
         self.NUM_EXAMPLES = num_examples
 
@@ -138,7 +128,7 @@ class TextDataset:
 
 class TextDatasetval:
 
-    def __init__(self, base_path=DATASET_PATHS, num_examples=15, target_transform=None):
+    def __init__(self, base_path=DATASET_PATHS, num_examples=20, target_transform=None):
 
         self.NUM_EXAMPLES = num_examples
         # base_path = DATASET_PATHS
