@@ -48,7 +48,7 @@ Download Dataset files and model from [dataset and checkpoint](https://drive.goo
 Quick setup with terminal:
 
 ```bash
-git clone https://github.com/DAIR-Group/WriteViT.git
+git clone https://github.com/hnam-1765/WriteViT.git
 cd WriteViT
 pip install --upgrade --no-cache-dir gdown
 gdown --id 1D_aT7CKEufR87pbfK-fF4wCr3cca6jAg && unzip ckpt.zip && rm ckpt.zip
