@@ -92,3 +92,114 @@ class ResNet18(nn.Module):
         x = self.maxpool2(x)
 
         return x
+    
+class VGG11(nn.Module):
+
+    def __init__(self, hidden=384):
+        super(VGG11, self).__init__()
+
+        self.features = nn.Sequential(
+
+            nn.Conv2d(1,64,3,1,1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(True),
+            nn.MaxPool2d(2,2),
+
+            nn.Conv2d(64,128,3,1,1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(True),
+            nn.MaxPool2d(2,2),
+
+            nn.Conv2d(128,256,3,1,1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(True),
+
+            nn.Conv2d(256,256,3,1,1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(True),
+            nn.MaxPool2d((2,1),(2,1)),
+
+            nn.Conv2d(256,512,3,1,1),
+            nn.BatchNorm2d(512),
+            nn.ReLU(True),
+
+            nn.Conv2d(512,512,3,1,1),
+            nn.BatchNorm2d(512),
+            nn.ReLU(True),
+            nn.MaxPool2d((2,1),(2,1)),
+
+            nn.Conv2d(512,hidden,2,1,0),
+            nn.BatchNorm2d(hidden),
+            nn.ReLU(True),
+        )
+
+    def forward(self,x):
+        return self.features(x)
+
+
+class VGG19(nn.Module):
+
+    def __init__(self, hidden=384):
+        super(VGG19, self).__init__()
+
+        self.features = nn.Sequential(
+
+            nn.Conv2d(1,64,3,1,1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(True),
+
+            nn.Conv2d(64,64,3,1,1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(True),
+            nn.MaxPool2d(2,2),
+
+            nn.Conv2d(64,128,3,1,1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(True),
+
+            nn.Conv2d(128,128,3,1,1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(True),
+            nn.MaxPool2d(2,2),
+
+            nn.Conv2d(128,256,3,1,1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(True),
+
+            nn.Conv2d(256,256,3,1,1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(True),
+
+            nn.Conv2d(256,256,3,1,1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(True),
+
+            nn.Conv2d(256,256,3,1,1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(True),
+            nn.MaxPool2d((2,1),(2,1)),
+
+            nn.Conv2d(256,512,3,1,1),
+            nn.BatchNorm2d(512),
+            nn.ReLU(True),
+
+            nn.Conv2d(512,512,3,1,1),
+            nn.BatchNorm2d(512),
+            nn.ReLU(True),
+
+            nn.Conv2d(512,512,3,1,1),
+            nn.BatchNorm2d(512),
+            nn.ReLU(True),
+
+            nn.Conv2d(512,512,3,1,1),
+            nn.BatchNorm2d(512),
+            nn.ReLU(True),
+            nn.MaxPool2d((2,1),(2,1)),
+
+            nn.Conv2d(512,hidden,2,1,0),
+            nn.BatchNorm2d(hidden),
+            nn.ReLU(True),
+        )
+
+    def forward(self,x):
+        return self.features(x)

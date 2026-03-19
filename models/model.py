@@ -16,14 +16,14 @@ from util.util import (
 
 from data.dataset import TextDataset, TextDatasetval
 import shutil
-from .OCR import ViT_OCR
+from .recognizer import ViT_OCR
 from .Generator import Generator
 from .Writer import Writer, strLabelConverter
  
 
 class WriteViT(nn.Module):
 
-    def __init__(self, batch_size=batch_size):
+    def __init__(self, batch_size=batch_size,backbone="resnet18"):
         super(WriteViT, self).__init__()
 
         self.batch_size = batch_size
@@ -32,7 +32,7 @@ class WriteViT(nn.Module):
         self.netD = nn.DataParallel(Discriminator()).to(DEVICE)
         self.netW =  Writer().to(DEVICE)
         self.netconverter = strLabelConverter(ALPHABET)
-        self.netOCR = ViT_OCR().to(DEVICE)
+        self.netOCR = ViT_OCR(backbone=backbone).to(DEVICE)
         self.OCR_criterion = CTCLoss(zero_infinity=True, reduction="none")
 
         self.optimizer_G = torch.optim.Adam(

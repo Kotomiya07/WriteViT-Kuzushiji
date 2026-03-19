@@ -30,7 +30,7 @@ if DATASET == 'CVL':
  
 
 ###############################################
-
+BACKBONE = "resnet18" # resnet18, vgg11, vgg19
 IMG_HEIGHT = 32
 resolution = 16
 batch_size = 16

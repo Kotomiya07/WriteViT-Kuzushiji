@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from params import *
 from .Attention import Block
 from util.util import PosCNN, PositionalEncoding
-from .Resnet18 import ResNet18
+from .backbone import ResNet18, VGG11, VGG19
 
 
 class LayerNorm(nn.Module):
@@ -16,6 +16,7 @@ class ViT_OCR(nn.Module):
 
     def __init__(
         self,
+        backbone="resnet18",
         nb_cls=VOCAB_SIZE,
         embed_dim=256,
         depth=3,
@@ -32,7 +33,12 @@ class ViT_OCR(nn.Module):
         # --------------------------------------------------------------------------
         # MAE encoder specifics
         self.layer_norm = LayerNorm()
-        self.patch_embed = ResNet18(embed_dim)
+        if backbone == "resnet18":
+            self.patch_embed = ResNet18(embed_dim)
+        if backbone == "vgg11":
+            self.patch_embed = VGG11(embed_dim)
+        if backbone == "vgg19":
+            self.patch_embed = VGG19(embed_dim)
         self.embed_dim = embed_dim
         self.pos_block = PosCNN(embed_dim, embed_dim)
         self.blocks = nn.ModuleList(

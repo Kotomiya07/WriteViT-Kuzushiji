@@ -32,7 +32,8 @@ def main():
                 pin_memory=True, drop_last=True,
                 collate_fn=TextDatasetObjval.collate_fn)
 
-    model = WriteViT().to(DEVICE)
+    
+    model = WriteViT(backbone=BACKBONE).to(DEVICE)
 
     os.makedirs('saved_models', exist_ok = True)
     MODEL_PATH = os.path.join('saved_models', EXP_NAME)
