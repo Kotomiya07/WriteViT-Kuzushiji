@@ -1,101 +1,130 @@
- # WriteViT: Handwritten Text Generation with Vision Transformer
+# WriteViT
+
+<p align="center"><em>Handwritten Text Generation with Vision Transformers</em></p>
 
 <p align="center">
-  <img src="./Figures/architecture.png" alt="Model Architecture" width="800"/>
+  <a href="https://arxiv.org/abs/2505.13235"><img alt="arXiv" src="https://img.shields.io/badge/arXiv-2505.13235-b31b1b.svg"></a>
+  <a href="https://colab.research.google.com/drive/15Lswqr-aQwI-fF6yRoGYt-2pxSlC2L-R"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
 </p>
+
+WriteViT is a one-shot handwritten text synthesis framework for learning a writer's style from a small set of reference images. It combines a ViT-based writer encoder, a multi-scale Transformer generator with conditional positional encoding, and a lightweight ViT recognizer. The project supports both English and Vietnamese handwriting generation.
 
 <p align="center">
-  <b>
-    <a href="https://arxiv.org/abs/2505.13235">ArXiv</a>
-    |
-    <a href="https://github.com/DAIR-Group/WriteViT">Code</a>
-    |
-    <a href="https://colab.research.google.com/drive/15Lswqr-aQwI-fF6yRoGYt-2pxSlC2L-R#scrollTo=abWDlzrTFa_h">
-      Demo
-    </a>
-  </b>
+  <img src="Figures/architecture.png" alt="WriteViT architecture" width="900">
 </p>
 
-<p align="center">
-  <a href="https://github.com/DAIR-Group/WriteViT">
-    <img alt="GitHub" src="https://img.shields.io/badge/GitHub-Repo-181717.svg?logo=github&logoColor=white">
-  </a>
-  <a href="https://arxiv.org/abs/2505.13235">
-    <img alt="arXiv" src="https://img.shields.io/badge/arXiv-2505.13235-b31b1b.svg">
-  </a>
-  <a href="https://colab.research.google.com/drive/15Lswqr-aQwI-fF6yRoGYt-2pxSlC2L-R#scrollTo=abWDlzrTFa_h">
-    <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-  </a>
-</p>
+## Resources
 
-</p>
+- [Paper](https://arxiv.org/abs/2505.13235)
+- [Interactive demo](https://colab.research.google.com/drive/15Lswqr-aQwI-fF6yRoGYt-2pxSlC2L-R)
+- [Datasets and checkpoints](https://drive.google.com/drive/folders/1ZgYS6-6l6fjKY75RJipONBByujIgf-uE?usp=sharing)
 
-  
-## Software environment
+## Installation
 
-- Python 3.7
-- PyTorch >=1.4
-
-## Setup & Training
-Please refer to `INSTALL.md` for installation instructions of required libraries.
-
-To visualize generated handwriting during training, you can modify the settings in `params.py`.
-
-
-
-Download Dataset files and model from [dataset and checkpoint](https://drive.google.com/drive/folders/1ZgYS6-6l6fjKY75RJipONBByujIgf-uE?usp=sharing)
-
-Quick setup with terminal:
+Python 3.7 or newer and a CUDA-capable GPU are recommended for training.
 
 ```bash
 git clone https://github.com/hnam-1765/WriteViT.git
 cd WriteViT
-pip install --upgrade --no-cache-dir gdown
-gdown --id 1D_aT7CKEufR87pbfK-fF4wCr3cca6jAg && unzip ckpt.zip && rm ckpt.zip
+
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
-To train the model
+Install the PyTorch build appropriate for your CUDA version if the default package does not match your system. See the [PyTorch installation guide](https://pytorch.org/get-started/locally/).
 
+## Data and checkpoints
+
+Download the prepared datasets and checkpoints from the link above, then place the dataset pickle files in `File/`. The default IAM configuration expects:
+
+```text
+File/
+├── IAM.pickle
+├── english_words.txt
+├── vn_words.txt
+└── unifont.pickle
 ```
-python train.py
-```
 
-If you want to use ```wandb``` please install it and change your auth_key in the ```train.py``` file. 
-
-You can also modify different hyperparameters in  ```params.py``` file.
-
-The dataset is organized as a dictionary containing lists of writer samples 
+The prepared dataset is a dictionary split by writer:
 
 ```python
 {
-'train': [{writer_1:[{'img': <PIL.IMAGE>, 'label':<str_label>},...]}, {writer_2:[{'img': <PIL.IMAGE>, 'label':<str_label>},...]},...], 
-'test': [{writer_3:[{'img': <PIL.IMAGE>, 'label':<str_label>},...]}, {writer_4:[{'img': <PIL.IMAGE>, 'label':<str_label>},...]},...], 
+    "train": {
+        "writer_id": [
+            {"img": PIL.Image.Image, "label": "handwritten text"},
+            # ...
+        ]
+    },
+    "test": {
+        "writer_id": [
+            {"img": PIL.Image.Image, "label": "handwritten text"},
+            # ...
+        ]
+    },
 }
 ```
- <!-- ## Run Demo using Docker
+
+To use another dataset or language, update `DATASET`, `DATASET_PATHS`, `NUM_WRITERS`, `WORDS_PATH`, and `ALPHABET` in `params.py`. More information about the auxiliary files is available in [`File/README.md`](File/README.md).
+
+## Training
+
+Review the experiment settings in `params.py`, especially the dataset paths, batch size, backbone, learning rates, and resume flag. Then start training with:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python train.py
 ```
- docker run -it -p 7860:7860 --platform=linux/amd64 \
-	registry.hf.space/ankankbhunia-hwt:latest python app.py
- ``` -->
 
-## Handwriting generation results
+The device is selected automatically by PyTorch. Checkpoints are written to `saved_models/<EXP_NAME>/`. The training setup also prepares `saved_images/<EXP_NAME>/` for generated samples and evaluation artifacts.
 
- <p align="center">
-<img src=Figures/Generation.png width="1000"/>
+The available recognizer backbones are `resnet18`, `vgg11`, and `vgg19`.
+
+## Results
+
+### Handwriting generation
+
+<p align="center">
+  <img src="Figures/Generation.png" alt="WriteViT handwriting generation results" width="1000">
 </p>
 
+### Handwriting reconstruction
 
-## Handwriting reconstruction results
- 
-
- <p align="center">
-<img src=Figures/Reconstruction.png width="1000"/>
+<p align="center">
+  <img src="Figures/Reconstruction.png" alt="WriteViT handwriting reconstruction results" width="1000">
 </p>
+
+## Repository structure
+
+```text
+WriteViT/
+├── data/           # Dataset loading and preparation utilities
+├── Figures/        # Architecture and qualitative results
+├── File/           # Lexicons, Unifont data, and prepared datasets
+├── models/         # Generator, discriminators, recognizer, and writer encoder
+├── util/           # Shared model and training utilities
+├── params.py       # Experiment and dataset configuration
+└── train.py        # Training entry point
+```
+
+## Citation
+
+If you use WriteViT in your research, please cite:
+
+```bibtex
+@article{nam2025writevit,
+  title   = {WriteViT: Handwritten Text Generation with Vision Transformer},
+  author  = {Dang Hoai Nam and Huynh Tong Dang Khoa and Vo Nguyen Le Duy},
+  journal = {arXiv preprint arXiv:2505.13235},
+  year    = {2025}
+}
+```
 
 ## Acknowledgements
 
-A large portion of codes in this repo is based on:[Handwriting-Transformers](https://github.com/ankanbhunia/Handwriting-Transformers) by Ankan Bhunia et al.
+This repository builds on [Handwriting Transformers](https://github.com/ankanbhunia/Handwriting-Transformers) by Ankan Kumar Bhunia et al. We thank the authors for making their work publicly available.
 
-We thank the authors for open-sourcing their work, which has been instrumental in developing this project.
+## License
 
- 
+This project is released under the [MIT License](LICENSE).

@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Training outputs and local data
+saved_images/
+saved_models/
+wandb/
+File/*.pickle
+!File/unifont.pickle
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
