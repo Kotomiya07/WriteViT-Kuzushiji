@@ -14,6 +14,7 @@ class Generator(nn.Module):
     def __init__(
         self,
         arg = None,
+        device=None,
         embed_dim=256,
         depth=3,
         num_heads=4,
@@ -34,6 +35,7 @@ class Generator(nn.Module):
         self.query_embed = UnifontModule(
             embed_dim,
             ALPHABET,
+            device=device,
             input_type="unifont",
             linear=True,
         )
@@ -118,9 +120,7 @@ class Generator(nn.Module):
 
         self.pos_block = nn.ModuleList([PosCNN(i, i) for i in self.embed_dim])
         self.norm = norm_layer(embed_dim, elementwise_affine=True)
-        self.noise = torch.distributions.Normal(
-            loc=torch.tensor([0.0]), scale=torch.tensor([1.0])
-        )
+        self.noise_strength = nn.Parameter(torch.tensor(float(GENERATOR_NOISE_INIT)))
 
         self.deconv = nn.Sequential(
             ResBlocks(
@@ -237,8 +237,8 @@ class Generator(nn.Module):
             + F.interpolate(x_3, scale_factor=2)
             + tgt
         )
-        noise = self.noise.sample(fused.size()).squeeze(-1).to(fused.device)
-        return fused + noise
+        noise = torch.randn_like(fused)
+        return fused + self.noise_strength * noise
 
     def forward(self, src_w, tgt):
         features = self._generate_features(src_w, tgt)

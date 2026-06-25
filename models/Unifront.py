@@ -4,9 +4,9 @@ import numpy as np
 from PIL import Image
 
 class UnifontModule(torch.nn.Module):
-    def __init__(self, out_dim, alphabet, device='cuda', input_type='unifont', linear=True):
+    def __init__(self, out_dim, alphabet, device=None, input_type='unifont', linear=True):
         super(UnifontModule, self).__init__()
-        self.device = device
+        self.device = device or ('cuda' if torch.cuda.is_available() else 'cpu')
         self.alphabet = alphabet
         self.symbols = self.get_symbols('unifont')
         self.symbols_repr = self.get_symbols(input_type)

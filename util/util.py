@@ -9,6 +9,11 @@ from torch.autograd import Variable
 import torch
 import torch.nn as nn
 import math
+
+
+HINGE_MARGIN = float(os.environ.get("WRITEVIT_HINGE_MARGIN", "1.0"))
+
+
 def random_word(len_word, alphabet):
     # generate a word constructed from len_word characters where each character is randomly chosen from the alphabet.
     char = np.random.randint(low=0, high=len(alphabet), size=len_word)
@@ -76,8 +81,8 @@ def loss_hinge_dis(dis_fake, dis_real, len_text_fake, len_text, mask_loss):
         for i in range(len(len_text)):
             mask_real[i, :, :, len_text[i]:] = 0
             mask_fake[i, :, :, len_text_fake[i]:] = 0
-    loss_real = torch.sum(F.relu(1. - dis_real * mask_real))/torch.sum(mask_real)
-    loss_fake = torch.sum(F.relu(1. + dis_fake * mask_fake))/torch.sum(mask_fake)
+    loss_real = torch.sum(F.relu(HINGE_MARGIN - dis_real) * mask_real)/torch.sum(mask_real)
+    loss_fake = torch.sum(F.relu(HINGE_MARGIN + dis_fake) * mask_fake)/torch.sum(mask_fake)
     return loss_real, loss_fake
 
 
